@@ -115,53 +115,67 @@ console.log(volumeLookup);
 /// update fields with difficulty
 
 if (difficultyLookup.length !== 0) {
-  let DFSresults = await DataForSEO(difficultyLookup);
-  for (const item of DFSresults) {
-    console.log(item);
+  try {
+    let DFSresults = await DataForSEO(difficultyLookup);
+    for (const item of DFSresults) {
+      console.log(item);
 
-    const match = queryResult.records.find(
-      (rec) =>
-        rec.getCellValue('Keyword') &&
-        rec.getCellValue('Keyword').toLowerCase() ===
-          (item.keyword && item.keyword.toLowerCase()),
-    );
+      const match = queryResult.records.find(
+        (rec) =>
+          rec.getCellValue('Keyword') &&
+          rec.getCellValue('Keyword').toLowerCase() ===
+            (item.keyword && item.keyword.toLowerCase()),
+      );
 
-    if (match) {
-      const updates = {
-        [DifficultyFieldName]:
-          item.keyword_difficulty == null ? 0 : item.keyword_difficulty,
-      };
-      await table.updateRecordAsync(match.id, updates);
-      console.log('Match found');
-    } else {
-      console.log('No match found');
+      if (match) {
+        const updates = {
+          [DifficultyFieldName]:
+            item.keyword_difficulty == null ? 0 : item.keyword_difficulty,
+        };
+        await table.updateRecordAsync(match.id, updates);
+        console.log('Match found');
+      } else {
+        console.log('No match found');
+      }
     }
+  } catch (error) {
+    console.log(
+      'An error occurred while fetching or processing the data:',
+      error,
+    );
   }
 } else {
-  console.log('DFS array 0');
+  console.log('Difficulty data already filled in, moving on to the next step');
 }
 /// update volume
 //console.log(KWEResults);
 if (volumeLookup.length !== 0) {
-  let KWEResults = await KeywordsEverywhere(volumeLookup);
-  for (const item of KWEResults) {
-    const match = queryResult.records.find(
-      (rec) =>
-        rec.getCellValue('Keyword') &&
-        rec.getCellValue('Keyword').toLowerCase() ===
-          (item.keyword && item.keyword.toLowerCase()),
-    );
+  try {
+    let KWEResults = await KeywordsEverywhere(volumeLookup);
+    for (const item of KWEResults) {
+      const match = queryResult.records.find(
+        (rec) =>
+          rec.getCellValue('Keyword') &&
+          rec.getCellValue('Keyword').toLowerCase() ===
+            (item.keyword && item.keyword.toLowerCase()),
+      );
 
-    if (match) {
-      const updates = {
-        [VolumeFieldName]: item.vol == null ? 0 : item.vol,
-      };
-      await table.updateRecordAsync(match.id, updates);
-      console.log('Match found');
-    } else {
-      console.log('No match found');
+      if (match) {
+        const updates = {
+          [VolumeFieldName]: item.vol == null ? 0 : item.vol,
+        };
+        await table.updateRecordAsync(match.id, updates);
+        console.log('Match found');
+      } else {
+        console.log('No match found');
+      }
     }
+  } catch (error) {
+    console.log(
+      'An error occurred while fetching or processing the data:',
+      error,
+    );
   }
 } else {
-  console.log('volume list is zero');
+  console.log('Volume data already filled in');
 }
