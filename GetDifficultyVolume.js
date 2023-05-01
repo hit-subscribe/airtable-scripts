@@ -62,7 +62,7 @@ async function KeywordsEverywhere(KeywordList) {
     requestOptions,
   );
   let responseJSON = await response.json();
-  return responseJSON;
+  return responseJSON.data;
 }
 
 async function DataForSEO(KeywordList) {
@@ -116,27 +116,28 @@ console.log(volumeLookup);
 
 if (difficultyLookup.length !== 0) {
   try {
-    let DFSresults = await DataForSEO(difficultyLookup);
+    let DFSresults = [];
+    DFSresults = await DataForSEO(difficultyLookup);
     for (const item of DFSresults) {
-      console.log(item);
+      const keyword = item.keyword?.toLowerCase();
+      if (!keyword) {
+        console.log('No keyword found in item:', item);
+        continue;
+      }
 
       const match = queryResult.records.find(
-        (rec) =>
-          rec.getCellValue('Keyword') &&
-          rec.getCellValue('Keyword').toLowerCase() ===
-            (item.keyword && item.keyword.toLowerCase()),
+        (rec) => rec.getCellValue('Keyword')?.toLowerCase() === keyword,
       );
-
-      if (match) {
-        const updates = {
-          [DifficultyFieldName]:
-            item.keyword_difficulty == null ? 0 : item.keyword_difficulty,
-        };
-        await table.updateRecordAsync(match.id, updates);
-        console.log('Match found');
-      } else {
-        console.log('No match found');
+      if (!match) {
+        console.log('No match found for keyword:', keyword);
+        continue;
       }
+
+      const updates = {
+        [DifficultyFieldName]: item.keyword_difficulty ?? 0,
+      };
+      await table.updateRecordAsync(match.id, updates);
+      console.log('Match found for keyword:', keyword);
     }
   } catch (error) {
     console.log(
@@ -147,29 +148,32 @@ if (difficultyLookup.length !== 0) {
 } else {
   console.log('Difficulty data already filled in, moving on to the next step');
 }
+
 /// update volume
 //console.log(KWEResults);
 if (volumeLookup.length !== 0) {
   try {
-    let KWEResults = await KeywordsEverywhere(volumeLookup);
-    for (const item of KWEResults) {
-      const match = queryResult.records.find(
-        (rec) =>
-          rec.getCellValue('Keyword') &&
-          rec.getCellValue('Keyword').toLowerCase() ===
-            (item.keyword && item.keyword.toLowerCase()),
-      );
+    let keywordResults = [];
 
-      if (match) {
-        const updates = {
-          [VolumeFieldName]: item.vol == null ? 0 : item.vol,
-        };
-        await table.updateRecordAsync(match.id, updates);
-        console.log('Match found');
+    keywordResults = await KeywordsEverywhere(volumeLookup);
+
+    for (const result of keywordResults) {
+      const matchingRecord = queryResult.records.find((record) => {
+        const keyword = record.getCellValue('Keyword')?.toLowerCase();
+        return keyword === result.keyword?.toLowerCase();
+      });
+
+      if (matchingRecord) {
+        const volume = result.vol ?? 0;
+        const updates = { [VolumeFieldName]: volume };
+        await table.updateRecordAsync(matchingRecord.id, updates);
+        console.log(`Updated record ${matchingRecord.id}`);
       } else {
-        console.log('No match found');
+        console.log(`No matching record for ${result.keyword}`);
       }
     }
+
+    // Other code can be run here
   } catch (error) {
     console.log(
       'An error occurred while fetching or processing the data:',
