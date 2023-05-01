@@ -1,11 +1,12 @@
 // API stuff
 ////
 /* Uncomment this and add in authorizations/variables
-
+// DO NOT PASTE THIS SECTION ANYWHERE OR COMMIT TO REPO
 let KWEAuth = 'Bearer KWEtoken'
-let DFSEOAuth= 'Bearer DFStoken'
+let DFSEOAuth= 'Basic DFStoken'
 let VolumeFieldName = 'Volume'
 let DifficultyFieldName = 'Difficulty'
+// DO NOT PASTE THIS SECTION ANYWHERE OR COMMIT TO REPO END
 */
 ////
 
