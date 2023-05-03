@@ -10,6 +10,7 @@ let DifficultyFieldName = 'Difficulty'
 */
 ////
 
+// Version May 2, 2023
 // This function will look at the query to see which entries are missing the respective 'field'
 function GenerateArray(queryResult, field) {
   let keywordList = [];
@@ -41,8 +42,6 @@ async function KeywordsEverywhere(KeywordList) {
 
   let urlencoded = new URLSearchParams();
   urlencoded.append('dataSource', 'gkp');
-  urlencoded.append('country', 'us');
-  urlencoded.append('currency', 'USD');
   for (const keyword of trimmedKeywordList) {
     urlencoded.append('kw[]', keyword);
   }
