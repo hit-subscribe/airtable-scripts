@@ -31,11 +31,9 @@ async function KeywordsEverywhere(keyword, token) {
   let table = base.getTable("Keywords");
   
   let recordId = `${inputConfig.recordId}`
-  console.log(`The value of keyword is ${inputConfig.keyword}`);
   
   let result = await KeywordsEverywhere(`${inputConfig.keyword}`, `${inputConfig.apitoken}`)
   
-  console.log("Volume:" + result);
   
   let updated = await table.updateRecordAsync(recordId, {
     "Volume": result
